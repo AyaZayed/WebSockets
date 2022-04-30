@@ -17,12 +17,20 @@ socket.on("messages", (data) => {
 function render() {
   var data = messageCashe;
   var html = data
+    .sort((a, b) => {
+      return b.ts - a.ts;
+    })
     .map(function (d, index) {
       return `
       <form class='message' onsubmit="return likeMessage(messageCashe[${index}])">
         <div class='name'>${d.userName}</div>
-        <a href=${d.content.link} class='message' target='blank'>${d.content.text}</a>
-        <input type='submit' class='likes-count' value="${d.likedBy.length} likes">
+        <a href=${
+          d.content.link
+        } class='message' target='blank'>${d.content.text}</a>
+        <div class='time'>${moment(d.ts).fromNow()}</div>
+        <input type='submit' class='likes-count' value="${
+          d.likedBy.length
+        } likes">
       </form>
       `;
     })
@@ -44,6 +52,7 @@ function likeMessage(message) {
 
 function addMessage(e) {
   var payload = {
+    messageId: randomID(),
     userName: document.getElementById("username").value,
     content: {
       text: document.getElementById("message").value,

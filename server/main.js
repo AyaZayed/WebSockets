@@ -9,6 +9,7 @@ var io = require("socket.io")(server);
 // });
 
 app.use(express.static("app"));
+app.use("/bower_components", express.static("bower_components"));
 
 io.on("connection", (socket) => {
   console.log("socket.io is alive");
@@ -16,6 +17,14 @@ io.on("connection", (socket) => {
   socket.on("new-message", (data) => {
     messages.push(data);
     io.sockets.emit("messages", messages);
+  });
+
+  socket.on("update-message", (data) => {
+    var message = messages.filter((m) => {
+      return m.messageId == data.messageId;
+    })[0];
+
+    message.likedBy = data.likedBy;
   });
 });
 
